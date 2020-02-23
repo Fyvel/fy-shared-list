@@ -1,0 +1,49 @@
+@mixin maxWidth {
+  max-width: 400px;
+  width: 100%;
+}
+
+@mixin item {
+  @include maxWidth;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin theme {
+  .input {
+    @include maxWidth;
+  }
+  .button {
+    margin: 4px;
+  }
+  .text {
+    @include maxWidth;
+  }
+}
+
+.list {
+  @include theme;
+  @include maxWidth;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+
+  .loading {
+    margin: 7px;
+  }
+}
+
+.item {
+  @include theme;
+  @include item;
+  .checked {
+    text-decoration: line-through;
+  }
+}
+.newItem {
+  @include theme;
+  @include item;
+}
