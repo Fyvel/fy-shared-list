@@ -5,15 +5,19 @@ import { config } from '../firebase'
 firebase.initializeApp(config)
 
 const initialState = {
+    id: 'todos',
+    name: 'New list',
     active: true,
     items: [] as { complete: boolean, text: string }[]
 }
 type List = typeof initialState
 
-const listFactory = ({ active, items } = initialState) => {
+const listFactory = ({ id, active, items, name } = initialState): List => {
     return {
+        id: id || initialState.id,
         active: (active !== undefined) ? active : initialState.active,
-        items: items || initialState.items
+        items: items || initialState.items,
+        name: name || initialState.name,
     }
 }
 
@@ -23,12 +27,17 @@ export default function useSharedList() {
     const [loading, setLoading] = useState(false)
 
     const updateList = useCallback((newList: List) => {
+        setList(newList)
         const update = firebase.firestore().collection('lists')
-            .doc('todos')
+            .doc(newList.id)
             .update(newList)
         return update
     }, [])
 
+    const selectList = (name: string) => {
+        const selectedList = { ...listFactory(), name }
+        updateList({ ...selectedList })
+    }
     const addItem = (newItem: string) => {
         const items = [...list.items]
         items.unshift({ complete: false, text: newItem })

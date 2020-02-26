@@ -1,11 +1,17 @@
 import React from "react";
-import './App.scss';
-import SharedList from "./containers/SharedList";
+import styles from './App.module.scss';
+import { BrowserRouter } from "react-router-dom";
+import Routes from "./router/routes";
+import { AuthContextProvider } from "./authentication";
 
 export default function App() {
     return (
-        <div className="App">
-            {<SharedList />}
-        </div>
+        <BrowserRouter>
+            <AuthContextProvider>
+                <div className={styles.App}>
+                    <Routes />
+                </div>
+            </AuthContextProvider>
+        </BrowserRouter>
     )
 }

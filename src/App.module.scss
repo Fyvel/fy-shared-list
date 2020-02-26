@@ -6,3 +6,12 @@
   align-items: center;
   justify-content: flex-start;
 }
+
+.Link,
+.Link:visited {
+  color: #09d3ac;
+
+  &:hover {
+    color: #fff;
+  }
+}
