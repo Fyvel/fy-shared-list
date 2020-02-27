@@ -1,14 +1,10 @@
 import React, { useState, useMemo, createContext } from "react"
+import { User } from "firebase/app"
 
-export type User = {
-    firstname: string,
-    lastname: string,
-    claims: { id: string, name: string }[]
-}
 
 export const initialAuthCtx = {
     user: null as User | null,
-    handleLogin: (user: User) => { },
+    handleLogin: (user: User | null) => { },
     handleLogout: () => { }
 }
 

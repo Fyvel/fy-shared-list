@@ -2,17 +2,17 @@ import React from 'react';
 import styles from './Login.module.scss'
 import { Button, TextField } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
+import { stringify } from 'querystring';
 
 type Props = {
     handleLogin: (args: any) => void
 }
 export default function Login(props: Props) {
-    const { register, handleSubmit, watch, errors } = useForm()
+    const { register, handleSubmit } = useForm()
 
-    console.log(watch('email')) // watch input value by passing the name of it
-
-    const onSubmit = (data: any) => {
+    const onSubmit = (data: Record<string, any>) => {
         console.log(data)
+        props.handleLogin(data.email)
     }
 
     return (
@@ -25,21 +25,12 @@ export default function Login(props: Props) {
                 variant="filled"
                 type="email"
             />
-            <Button type="submit"
+            <Button className={styles.btn}
+                type="submit"
                 variant="contained"
                 color="primary">
                 SIGN IN
             </Button>
         </form>
     )
-    // return (
-    //     <>
-    //         <Button
-    //             variant="contained"
-    //             color="primary"
-    //             onClick={props.handleLogin}>
-    //             SIGN IN
-    //         </Button>
-    //     </>
-    // )
 }

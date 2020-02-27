@@ -1,8 +1,5 @@
 import { useEffect, useState, useCallback } from "react"
-
-import firebase from 'firebase';
-import { config } from '../firebase'
-firebase.initializeApp(config)
+import useFirebase from "./useFirebase"
 
 const initialState = {
     id: 'todos',
@@ -25,6 +22,7 @@ export default function useSharedList() {
     const [list, setList] = useState(initialState)
     const [error, setError] = useState<Error>()
     const [loading, setLoading] = useState(false)
+    const { firebase } = useFirebase()
 
     const updateList = useCallback((newList: List) => {
         setList(newList)
