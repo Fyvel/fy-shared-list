@@ -72,7 +72,7 @@ export default function SignIn({ callback }: { callback: () => void }) {
                         Welcome!
                     </h1>
                     <h3>Use your email address to sign in</h3>
-                    <Login handleLogin={sendEmailLink} />
+                    <Login handleLogin={sendEmailLink} handleSigninLink={confirmSignIn}/>
                 </>
                 : <>
                     <h1>
