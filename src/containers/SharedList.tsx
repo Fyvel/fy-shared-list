@@ -1,11 +1,31 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import { List, NewItem } from "../components/List";
 import useSharedList from "../hooks/useSharedList";
+import EventEmitter from '../event/event';
 
 export default function SharedList() {
-    const initial = ''
-    const [item, setItem] = useState<string>(initial)
-    const { list, addItem, checkItem, removeItem, resetList, error, loading } = useSharedList()
+    const initial = {
+        item: '',
+        listId: 'todos'
+    }
+    const [item, setItem] = useState<string>(initial.item)
+    const [listId, setListId] = useState<string>(initial.listId)
+    
+    EventEmitter.subscribe('onListChange', (id: string) => setListId(id))
+    const {
+        list,
+        addItem,
+        checkItem,
+        removeItem,
+        resetList,
+        error,
+        loading,
+        selectList } = useSharedList()
+
+    useEffect(() => {
+        selectList(listId)
+    }, [listId])
+
 
     const handleChange = (event: ChangeEvent<{ value: unknown }>) =>
         setItem(event.target.value as string);
@@ -13,7 +33,7 @@ export default function SharedList() {
     const handleAddClick = () => {
         if (!item) { return }
         addItem(item)
-        setItem(initial)
+        setItem(initial.item)
     }
 
     const handleEnterPress = (e: any) => {
@@ -24,7 +44,7 @@ export default function SharedList() {
 
     return (
         <>
-            <h3>Ma darling's list</h3>
+            <h3>{list.name}</h3>
             <NewItem
                 value={item}
                 handleClick={handleAddClick}

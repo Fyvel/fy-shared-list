@@ -1,18 +1,12 @@
-import React from "react";
+import React from 'react';
 import styles from './List.module.scss';
-
-import { cyan, purple } from "@material-ui/core/colors";
 import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import {
-    TextField,
-    Button,
-    FormControlLabel,
-    Checkbox,
-    CircularProgress
-} from "@material-ui/core";
-
-
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 type Item = { text: string, complete: boolean };
 
@@ -65,7 +59,8 @@ export function List({ items, loading, handleChangeItem, handleRemoveItem, handl
             {items.length > 0 &&
                 <Button aria-label='Clear list' onClick={handleResetList} variant="outlined" color="secondary">
                     Clear List
-                    </Button>}
+                </Button>
+            }
         </div>
     )
 }

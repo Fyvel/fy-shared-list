@@ -2,12 +2,11 @@ import React from 'react';
 import styles from './Login.module.scss'
 import { Button, TextField } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
-import { stringify } from 'querystring';
 
-type Props = {
+type LoginProps = {
     handleLogin: (args: any) => void
 }
-export default function Login(props: Props) {
+export default function Login(props: LoginProps) {
     const { register, handleSubmit } = useForm()
 
     const onSubmit = (data: Record<string, any>) => {
@@ -33,4 +32,19 @@ export default function Login(props: Props) {
             </Button>
         </form>
     )
+}
+
+type LogoutProps = {
+    handleLogout: (args: any) => void
+}
+export function Logout(props: LogoutProps) {
+    return (
+        <>
+            <Button className={styles.btn}
+                onClick={props.handleLogout}
+                variant="contained"
+                color="secondary">
+                SIGN OUT
+            </Button>
+        </>)
 }

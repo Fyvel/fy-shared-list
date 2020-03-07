@@ -1,70 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../authentication';
-import Login from '../components/Login';
+import Login, { Logout } from '../components/Login';
 import useFirebase from '../hooks/useFirebase';
 
 const SETTINGS = {
-    // Your redirect URL
+    // redirect URL
     url: 'http://localhost:3000/signin',
     handleCodeInApp: true,
 }
 
 export default function SignIn({ callback }: { callback: () => void }) {
-    const { user, handleLogin } = useAuthContext()
-    const { firebase } = useFirebase()
-    const [emailSent, setEmailSent] = useState(false)
-    const [error, setError] = useState('')
+    const initial = {
+        emailKey: 'EMAIL_FOR_SIGN_IN',
+        emailValue: '',
+        emailSent: false,
+        error: ''
+    }
+    const { user, handleLogin, handleLogout } = useAuthContext()
+    const { fireauth } = useFirebase()
+    // const [emailKey, setEmailKey] = useStorage(initial.emailKey, initial.emailValue)
+    const [emailSent, setEmailSent] = useState(initial.emailSent)
+    const [error, setError] = useState(initial.error)
 
     const sendEmailLink = async (email: string) => {
-        debugger
         const actionCodeSettings = { ...SETTINGS }
         try {
-            await firebase.auth().sendSignInLinkToEmail(
+            await fireauth().sendSignInLinkToEmail(
                 email,
                 actionCodeSettings
             )
-            window.localStorage.setItem('emailForSignIn', email)
+            // setEmailKey(email)
+            window.localStorage.setItem(initial.emailKey, email)
             setEmailSent(true)
+            setError(initial.error)
         } catch (err) {
             console.log(err)
             setError(err.message)
+            setEmailSent(false)
         }
     }
     const confirmSignIn = async (url: string) => {
         try {
-            if (firebase.auth().isSignInWithEmailLink(url)) {
-                const email = window.localStorage.getItem('emailForSignIn')
+            if (fireauth().isSignInWithEmailLink(url)) {
                 // If missing email, prompt user for it
-                if (!email) {
-                    window.alert('Please provide your email for confirmation !')
-                    throw new Error('An email address is required')
+                const emailValue = window.localStorage.getItem(initial.emailKey)
+                if (!emailValue) {
+                    const email = window.prompt('Hey there! Please provide your email for confirmation 😄') || ''
+                    window.localStorage.setItem(initial.emailKey, email)
                 }
                 // Signin user and remove the email localStorage
-                const creds = await firebase.auth().signInWithEmailLink(email, url)
-
-                window.localStorage.removeItem('emailForSignIn')
+                const creds = await fireauth().signInWithEmailLink(window.localStorage.getItem(initial.emailKey)!, url)
                 handleLogin(creds.user)
                 return callback()
             }
         } catch (err) {
             setError(err.message)
+            setEmailSent(false)
         }
     }
 
+    useEffect(() => {
+        confirmSignIn(window.location.href)
+    }, [])
+
     return (
         <>
-            <h1>
-                <span role="img" aria-label="emoji">🤷‍♀️</span>
-                Who are you?
-            </h1>
-           {user
-                ? <>logged in</>
-                : <Login handleLogin={sendEmailLink} />}
+            {!user
+                ? <>
+                    <h1>
+                        <span role="img" aria-label="emoji">👋</span>
+                        Welcome!
+                    </h1>
+                    <h3>Use your email address to sign in</h3>
+                    <Login handleLogin={sendEmailLink} />
+                </>
+                : <>
+                    <h1>
+                        <span role="img" aria-label="emoji">👏</span>
+                        Your are logged in
+                    </h1>
+                    <Logout handleLogout={handleLogout} />
+                </>}
             {emailSent &&
-                (<>An email has been to your address</>)}
+                (<>
+                    <span role="img" aria-label="emoji">🎉</span>
+                    Great! We sent you an email with your login link
+                </>)}
             {error &&
                 (<>
-                    <p>Something went wrong...</p>
+                    <span role="img" aria-label="emoji">😱</span>
+                    <p>Oops... Something went wrong...</p>
                     <p>{error}</p>
                 </>)}
         </>)

@@ -1,6 +1,5 @@
-import React, { useState, useMemo, createContext } from "react"
+import React, { useState, useMemo, createContext, useEffect } from "react"
 import { User } from "firebase/app"
-
 
 export const initialAuthCtx = {
     user: null as User | null,
@@ -11,11 +10,25 @@ export const initialAuthCtx = {
 export const AuthContext = createContext(initialAuthCtx)
 
 export function AuthContextProvider(props: any) {
-    const [user, setUser] = useState(initialAuthCtx.user)
+    const storedUser = window.localStorage.getItem('FIREBASE_USER')
 
-    const handleLogout = () => setUser(initialAuthCtx.user)
+    const [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : initialAuthCtx.user)
 
-    const handleLogin = (data: User) => setUser(data)
+    const handleLogout = () => {
+        setUser(initialAuthCtx.user)
+        window.localStorage.removeItem('FIREBASE_USER')
+    }
+
+    const handleLogin = (data: User) => {
+        setUser(data)
+        window.localStorage.setItem('FIREBASE_USER', JSON.stringify(data))
+    }
+
+    // useEffect(() => {
+    //     if (user) return
+    //     const storedUser = window.localStorage.getItem('FIREBASE_USER')
+    //     setUser(storedUser ? JSON.parse(storedUser) : initialAuthCtx.user)
+    // }, [user])
 
     // useMemo to memorize the metadata every time 'auth' is changing
     const auth = useMemo(() => ({

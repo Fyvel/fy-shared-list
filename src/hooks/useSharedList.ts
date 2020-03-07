@@ -1,13 +1,13 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import useFirebase from "./useFirebase"
+import { List, LinkItem } from "../models/domain"
 
 const initialState = {
-    id: 'todos',
-    name: 'New list',
+    id: '',
+    name: '',
     active: true,
     items: [] as { complete: boolean, text: string }[]
 }
-type List = typeof initialState
 
 const listFactory = ({ id, active, items, name } = initialState): List => {
     return {
@@ -19,22 +19,24 @@ const listFactory = ({ id, active, items, name } = initialState): List => {
 }
 
 export default function useSharedList() {
-    const [list, setList] = useState(initialState)
+    const { firestore } = useFirebase()
+    const [list, setList] = useState<List>(initialState)
     const [error, setError] = useState<Error>()
     const [loading, setLoading] = useState(false)
-    const { firebase } = useFirebase()
+    const [links, setLinks] = useState<LinkItem[]>([])
 
     const updateList = useCallback((newList: List) => {
+        if (!newList.id) return
         setList(newList)
-        const update = firebase.firestore().collection('lists')
+        const update = firestore().collection('lists')
             .doc(newList.id)
             .update(newList)
         return update
-    }, [])
+    }, [firestore])
 
-    const selectList = (name: string) => {
-        const selectedList = { ...listFactory(), name }
-        updateList({ ...selectedList })
+    const selectList = (id: string) => {
+        const selectedList = { ...listFactory(), id }
+        setList(selectedList)
     }
     const addItem = (newItem: string) => {
         const items = [...list.items]
@@ -63,15 +65,38 @@ export default function useSharedList() {
         updateList(update)
     }
 
-    // fetch items on load
-    useEffect(() => {
-        setLoading(true)
-        const fetchList = firebase.firestore().collection('lists')
-            .doc('todos')
+    const fetchLinks = useMemo(() => {
+        firestore().collection('lists')
+            .where("active", "==", true)
+            .onSnapshot(
+                snapchot => {
+                    if (!snapchot) { throw new Error('Nothing here') }
+                    const result: LinkItem[] = []
+                    snapchot.forEach(doc => {
+                        const { id, name, items } = doc.data() as List
+                        result.push({
+                            id,
+                            text: name,
+                            itemsNumber: (items || []).filter(x => x && !x.complete).length
+                        })
+                    });
+                    setLinks(result)
+                    setLoading(false)
+                },
+                err => {
+                    setError(err)
+                    setList(initialState)
+                    setLoading(false)
+                })
+    }, [firestore])
+
+    const fetchList = useMemo(() => {
+        if (!list.id) return
+        firestore().collection('lists')
+            .doc(list.id)
             .onSnapshot(
                 doc => {
                     if (!doc) { throw new Error('Nothing here') }
-                    console.log('doc received', doc.data())
                     const result = listFactory({ ...doc.data() as List })
                     setList(result)
                     setLoading(false)
@@ -81,11 +106,20 @@ export default function useSharedList() {
                     setList(initialState)
                     setLoading(false)
                 })
-        // returning the fetchList function will ensure that
-        // we unsubscribe from document changes when our id
-        // changes to a different value.
-        return fetchList
+    }, [firestore, list.id])
+
+    // fetch list info
+    useEffect(() => {
+        setLoading(true)
+        return fetchLinks
     }, [])
+
+    // fetch items on load
+    useEffect(() => {
+        selectList(list.id)
+        setLoading(true)
+        return fetchList
+    }, [list.id])
 
     return {
         error,
@@ -95,5 +129,7 @@ export default function useSharedList() {
         removeItem,
         resetList,
         checkItem,
+        selectList,
+        links,
     }
 }
