@@ -5,7 +5,7 @@ import useFirebase from '../hooks/useFirebase';
 
 const SETTINGS = {
     // redirect URL
-    url: 'http://localhost:3000/signin',
+    url: 'https://fy-shared-list.web.app/signin',
     handleCodeInApp: true,
 }
 

@@ -2,7 +2,7 @@ import React, { ReactNode } from "react"
 import { Switch, Route, useHistory, useLocation, Redirect, RouteProps } from "react-router-dom"
 import SharedList from "../containers/SharedList"
 import { useAuthContext } from "../authentication"
-import Unauthorized from "../components/Unauthorized"
+// import Unauthorized from "../components/Unauthorized"
 import SignIn from "../containers/SignIn"
 
 // wrapper to redirect not authenticated user
