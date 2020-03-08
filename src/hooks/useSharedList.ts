@@ -25,14 +25,14 @@ export default function useSharedList() {
     const [loading, setLoading] = useState(false)
     const [links, setLinks] = useState<LinkItem[]>([])
 
-    const updateList = useCallback((newList: List) => {
+    const updateList = (newList: List) => {
         if (!newList.id) return
         setList(newList)
         const update = firestore().collection('lists')
             .doc(newList.id)
             .update(newList)
         return update
-    }, [firestore])
+    }
 
     const selectList = (id: string) => {
         const selectedList = { ...listFactory(), id }

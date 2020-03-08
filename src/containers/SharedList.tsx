@@ -23,6 +23,7 @@ export default function SharedList() {
 
     useEffect(() => {
         EventEmitter.subscribe('onListChange', (id: string) => setListId(id))
+        return () => EventEmitter.unsubscribe('onListChange')
     }, [])
 
     useEffect(() => {
