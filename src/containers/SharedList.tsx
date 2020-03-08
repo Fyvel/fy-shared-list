@@ -10,8 +10,7 @@ export default function SharedList() {
     }
     const [item, setItem] = useState<string>(initial.item)
     const [listId, setListId] = useState<string>(initial.listId)
-    
-    EventEmitter.subscribe('onListChange', (id: string) => setListId(id))
+
     const {
         list,
         addItem,
@@ -23,9 +22,12 @@ export default function SharedList() {
         selectList } = useSharedList()
 
     useEffect(() => {
+        EventEmitter.subscribe('onListChange', (id: string) => setListId(id))
+    }, [])
+
+    useEffect(() => {
         selectList(listId)
     }, [listId])
-
 
     const handleChange = (event: ChangeEvent<{ value: unknown }>) =>
         setItem(event.target.value as string);

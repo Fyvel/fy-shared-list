@@ -8,6 +8,9 @@ const CustomEventEmitter = {
     subscribe: function <T>(eventName: string, callback: Callback<T>) {
         if (!this.events[eventName]) this.events[eventName] = []
         this.events[eventName].push(callback)
+    },
+    unsubscribe: function (eventName: string) {
+        this.events[eventName] = []
     }
 }
-export default CustomEventEmitter;
+export default CustomEventEmitter

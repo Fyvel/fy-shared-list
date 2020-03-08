@@ -12,11 +12,9 @@ export default function Login(props: LoginProps) {
     const { register, handleSubmit } = useForm()
 
     const onSubmitEmail = (data: Record<string, any>) => {
-        debugger
         props.handleLogin(data.email)
     }
     const onSubmitLink = (data: Record<string, any>) => {
-        debugger
         props.handleSigninLink(data.link)
     }
 

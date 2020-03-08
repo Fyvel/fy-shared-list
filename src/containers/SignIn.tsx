@@ -43,7 +43,6 @@ export default function SignIn({ callback }: { callback: () => void }) {
         try {
             if (fireauth().isSignInWithEmailLink(url)) {
                 // If missing email, prompt user for it
-                debugger
                 const emailValue = window.localStorage.getItem(initial.emailKey)
                 if (!emailValue) {
                     const email = window.prompt('Hey there! Please provide your email for confirmation 😄') || ''
