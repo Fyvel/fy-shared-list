@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useState, useEffect } from "react"
 import useFirebase from "./useFirebase"
 import { List, LinkItem } from "../models/domain"
 
@@ -22,7 +22,7 @@ export default function useSharedList() {
     const { firestore } = useFirebase()
     const [list, setList] = useState<List>(initialState)
     const [error, setError] = useState<Error>()
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [links, setLinks] = useState<LinkItem[]>([])
 
     const updateList = (newList: List) => {
@@ -33,7 +33,6 @@ export default function useSharedList() {
             .update(newList)
         return update
     }
-
     const selectList = (id: string) => {
         const selectedList = { ...listFactory(), id }
         setList(selectedList)
@@ -65,7 +64,7 @@ export default function useSharedList() {
         updateList(update)
     }
 
-    const fetchLinks = useMemo(() => {
+    useEffect(() => {
         firestore.collection('lists')
             .where("active", "==", true)
             .onSnapshot(
@@ -90,7 +89,7 @@ export default function useSharedList() {
                 })
     }, [firestore])
 
-    const fetchList = useMemo(() => {
+    useEffect(() => {
         if (!list.id) return
         const unsubscribe = firestore.collection('lists')
             .doc(list.id)
@@ -108,19 +107,6 @@ export default function useSharedList() {
                 })
         return () => unsubscribe()
     }, [firestore, list.id])
-
-    // // fetch list info
-    // useEffect(() => {
-    //     setLoading(true)
-    //     return fetchLinks
-    // }, [])
-
-    // // fetch items on load
-    // useEffect(() => {
-    //     selectList(list.id)
-    //     setLoading(true)
-    //     return fetchList
-    // }, [list.id])
 
     return {
         error,

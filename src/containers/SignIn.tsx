@@ -12,10 +12,20 @@ export default function SignIn({ callback }: { callback: () => void }) {
         user,
         signIn,
         sendEmailLink,
-        signOut } = useAuthContext()
+        signOut, } = useAuthContext()
     // const [emailKey, setEmailKey] = useStorage(initial.emailKey, initial.emailValue)
-    const [emailSent, setEmailSent] = useState(initial.emailSent)
-    const [error, setError] = useState(initial.error)
+    const [emailSent, setEmailSent] = useState(false)
+    const [error, setError] = useState<Error>()
+
+    const handleLogin = async (email: string) => {
+        try {
+            await sendEmailLink(email)
+            setEmailSent(true)
+        } catch (e) {
+            setEmailSent(false)
+            setError(e)
+        }
+    }
 
     useEffect(() => {
         signIn(window.location.href)
@@ -30,7 +40,7 @@ export default function SignIn({ callback }: { callback: () => void }) {
                         Welcome!
                     </h1>
                     <h3>Use your email address to sign in</h3>
-                    <Login handleLogin={sendEmailLink} handleSigninLink={signIn} />
+                    <Login handleLogin={handleLogin} handleSigninLink={signIn} />
                 </>
                 : <>
                     <h1>

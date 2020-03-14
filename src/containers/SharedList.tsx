@@ -48,11 +48,12 @@ export default function SharedList() {
     return (
         <>
             <h3>{list.name}</h3>
-            <NewItem
-                value={item}
-                handleClick={handleAddClick}
-                handleKeyDown={handleEnterPress}
-                handleChange={handleChange} />
+            {!loading &&
+                <NewItem
+                    value={item}
+                    handleClick={handleAddClick}
+                    handleKeyDown={handleEnterPress}
+                    handleChange={handleChange} />}
             <List
                 loading={loading}
                 error={error}
@@ -60,6 +61,5 @@ export default function SharedList() {
                 handleChangeItem={checkItem}
                 handleRemoveItem={removeItem}
                 handleResetList={resetList} />
-
         </>)
 }

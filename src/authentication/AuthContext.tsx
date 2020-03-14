@@ -35,8 +35,7 @@ export const useAuthContext = () => useContext(AuthContext)
 export function AuthContextProvider(props: any) {
     const { fireauth, persistence } = useFirebase()
     const [user, setUser] = useLocalStorage<firebase.User>(USER_KEY)
-    // const [emailStored, setEmailStored] = useLocalStorage(EMAIL_KEY, '')
-
+    const [emailStored, setEmailStored] = useLocalStorage(EMAIL_KEY)
     const [error, setError] = useState<Error>()
 
     useEffect(() => {
@@ -54,7 +53,7 @@ export function AuthContextProvider(props: any) {
         const sendEmailLink = async (email: string) => {
             const actionCodeSettings = { ...SETTINGS }
             try {
-                window.localStorage.setItem(EMAIL_KEY, email)
+                setEmailStored(email)
                 return await fireauth.sendSignInLinkToEmail(
                     email,
                     actionCodeSettings
@@ -71,16 +70,15 @@ export function AuthContextProvider(props: any) {
                 try {
                     if (fireauth.isSignInWithEmailLink(url)) {
                         // If missing email, prompt user for it
-                        const emailValue = window.localStorage.getItem(EMAIL_KEY)
-                        if (!emailValue) {
+                        if (!emailStored) {
                             const email = window.prompt('Hey there! Please provide your email addresse to get on board 😄') || ''
-                            window.localStorage.setItem(EMAIL_KEY, email)
+                            setEmailStored(email)
                             return callback(undefined)
                         }
                         // Signin user and remove the email localStorage
                         await fireauth.setPersistence(persistence.LOCAL)
-                        const creds = await fireauth.signInWithEmailLink(emailValue, url)
-                        window.localStorage.removeItem(EMAIL_KEY)
+                        const creds = await fireauth.signInWithEmailLink(emailStored, url)
+                        setEmailStored()
                         return callback(creds.user || undefined)
                     }
                 } catch (err) {
@@ -105,7 +103,7 @@ export function AuthContextProvider(props: any) {
             error,
         }
         return ctx
-    }, [user, error, fireauth, setUser, persistence.LOCAL])
+    }, [user, error, fireauth, setUser, setEmailStored, emailStored, persistence.LOCAL])
 
     return <AuthContext.Provider value={auth} {...props} />
 }

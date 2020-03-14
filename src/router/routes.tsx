@@ -23,6 +23,11 @@ function PrivateRoute({ children, ...rest }: { children: ReactNode } & RouteProp
         />)
 }
 
+export const RoutePath = {
+    SIGNIN: "/signin",
+    SHAREDLIST: "/sharedList",
+}
+
 export default function Routes() {
     const history = useHistory()
     const location = useLocation<{ from: string }>()
@@ -30,17 +35,17 @@ export default function Routes() {
 
     return (
         <Switch>
-            <Route path="/signin">
+            <Route path={RoutePath.SIGNIN}>
                 <SignIn callback={() => history.replace(from)} />
             </Route>
             {/* <Route path="/unauthorized">
                 <Unauthorized />
             </Route> */}
-            <PrivateRoute path="/sharedList">
+            <PrivateRoute path={RoutePath.SHAREDLIST}>
                 <SharedList />
             </PrivateRoute>
-            <Redirect to="/sharedList" />
-            <Redirect exact path="/" to="/sharedList" />
+            <Redirect to={RoutePath.SHAREDLIST} />
+            <Redirect exact path="/" to={RoutePath.SHAREDLIST} />
         </Switch>
     )
 }
