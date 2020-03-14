@@ -33,7 +33,7 @@ export default function Login(props: LoginProps) {
                     variant="contained"
                     color="primary">
                     BEGIN SIGN IN
-                        </Button>
+                </Button>
             </form>
             <br />
             <br />

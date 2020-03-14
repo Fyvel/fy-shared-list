@@ -1,15 +1,16 @@
-import firebase from 'firebase/app'
+import firebase from 'firebase/app';
 import 'firebase/firestore'
 import 'firebase/auth'
 import { config } from '../firebase'
 
-export default function useFirebase(firebaseConfig = { ...config }) {
-    if (!firebase.apps.length) {
-        console.log('firebase init')
-        firebase.initializeApp(firebaseConfig)
-    }
-    return {
-        firestore: firebase.firestore,
-        fireauth: firebase.auth
-    }
+firebase.initializeApp(config)
+
+const { firestore, fireauth, persistence } = {
+    firestore: firebase.firestore(),
+    fireauth: firebase.auth(),
+    persistence: firebase.auth.Auth.Persistence
+}
+
+export default function useFirebase() {
+    return { firestore, fireauth, persistence }
 }

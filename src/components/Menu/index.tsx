@@ -68,7 +68,7 @@ export default function Menu(props: MenuProps) {
                         {props.loading && <div className={styles.loading}>
                             <CircularProgress color='primary' />
                         </div>}
-                        {props.links.map((item, index) => (
+                        {props.user && props.links.map((item, index) => (
                             <ListItem button key={index}
                                 onClick={(event: SyntheticEvent) => navigate(event, item)}>
                                 <div className={styles.item}>

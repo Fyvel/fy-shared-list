@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react"
+import { useState, useMemo } from "react"
 import useFirebase from "./useFirebase"
 import { List, LinkItem } from "../models/domain"
 
@@ -28,7 +28,7 @@ export default function useSharedList() {
     const updateList = (newList: List) => {
         if (!newList.id) return
         setList(newList)
-        const update = firestore().collection('lists')
+        const update = firestore.collection('lists')
             .doc(newList.id)
             .update(newList)
         return update
@@ -66,7 +66,7 @@ export default function useSharedList() {
     }
 
     const fetchLinks = useMemo(() => {
-        firestore().collection('lists')
+        firestore.collection('lists')
             .where("active", "==", true)
             .onSnapshot(
                 snapchot => {
@@ -79,7 +79,7 @@ export default function useSharedList() {
                             text: name,
                             itemsNumber: (items || []).filter(x => x && !x.complete).length
                         })
-                    });
+                    })
                     setLinks(result)
                     setLoading(false)
                 },
@@ -92,7 +92,7 @@ export default function useSharedList() {
 
     const fetchList = useMemo(() => {
         if (!list.id) return
-        firestore().collection('lists')
+        const unsubscribe = firestore.collection('lists')
             .doc(list.id)
             .onSnapshot(
                 doc => {
@@ -106,20 +106,21 @@ export default function useSharedList() {
                     setList(initialState)
                     setLoading(false)
                 })
+        return () => unsubscribe()
     }, [firestore, list.id])
 
-    // fetch list info
-    useEffect(() => {
-        setLoading(true)
-        return fetchLinks
-    }, [])
+    // // fetch list info
+    // useEffect(() => {
+    //     setLoading(true)
+    //     return fetchLinks
+    // }, [])
 
-    // fetch items on load
-    useEffect(() => {
-        selectList(list.id)
-        setLoading(true)
-        return fetchList
-    }, [list.id])
+    // // fetch items on load
+    // useEffect(() => {
+    //     selectList(list.id)
+    //     setLoading(true)
+    //     return fetchList
+    // }, [list.id])
 
     return {
         error,
