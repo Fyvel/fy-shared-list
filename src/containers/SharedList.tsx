@@ -1,15 +1,14 @@
 import React, { useState, ChangeEvent, useEffect } from "react";
 import { List, NewItem } from "../components/List";
 import useSharedList from "../hooks/useSharedList";
-import EventEmitter from '../event/event';
 
-export default function SharedList() {
+type Props = { id: string | null }
+export default function SharedList(props: Props) {
     const initial = {
         item: '',
-        listId: 'todos'
+        listId: ''
     }
     const [item, setItem] = useState<string>(initial.item)
-    const [listId, setListId] = useState<string>(initial.listId)
 
     const {
         list,
@@ -19,16 +18,8 @@ export default function SharedList() {
         resetList,
         error,
         loading,
-        selectList } = useSharedList()
-
-    useEffect(() => {
-        EventEmitter.subscribe('onListChange', (id: string) => setListId(id))
-        return () => EventEmitter.unsubscribe('onListChange')
-    }, [])
-
-    useEffect(() => {
-        selectList(listId)
-    }, [listId])
+        selectList
+    } = useSharedList()
 
     const handleChange = (event: ChangeEvent<{ value: unknown }>) =>
         setItem(event.target.value as string);
@@ -45,21 +36,27 @@ export default function SharedList() {
         }
     }
 
+    useEffect(() => {
+        if (!props.id) return
+        selectList(props.id)
+    }, [props.id, selectList])
+
     return (
         <>
             <h3>{list.name}</h3>
-            {!loading &&
+            {!loading && props.id &&
                 <NewItem
                     value={item}
                     handleClick={handleAddClick}
                     handleKeyDown={handleEnterPress}
                     handleChange={handleChange} />}
-            <List
-                loading={loading}
-                error={error}
-                items={list.items}
-                handleChangeItem={checkItem}
-                handleRemoveItem={removeItem}
-                handleResetList={resetList} />
+            {props.id &&
+                <List
+                    loading={loading}
+                    error={error}
+                    items={list.items}
+                    handleChangeItem={checkItem}
+                    handleRemoveItem={removeItem}
+                    handleResetList={resetList} />}
         </>)
 }

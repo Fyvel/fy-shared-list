@@ -18,3 +18,13 @@
 .button {
   min-width: 100vw;
 }
+
+.link,
+.link:visited {
+  line-height: 2em;
+  color: #00bcd4;
+
+  &:hover {
+    color: #fff;
+  }
+}

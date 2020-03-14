@@ -23,8 +23,49 @@ export default function useSharedList() {
     const [list, setList] = useState<List>(initialState)
     const [error, setError] = useState<Error>()
     const [loading, setLoading] = useState(true)
-    const [links, setLinks] = useState<LinkItem[]>([])
+    const [listNames, setListNames] = useState<LinkItem[]>([])
 
+    const selectList = (id: string) => {
+        if (!id) return
+        firestore.collection('lists')
+            .doc(id)
+            .onSnapshot(
+                doc => {
+                    if (!doc) { throw new Error('Nothing here') }
+                    const result = listFactory({ ...doc.data() as List })
+                    setList(result)
+                    setLoading(false)
+                },
+                err => {
+                    setError(err)
+                    setList(initialState)
+                    setLoading(false)
+                })
+    }
+    const getLists = () => {
+        firestore.collection('lists')
+            .where("active", "==", true)
+            .onSnapshot(
+                snapchot => {
+                    if (!snapchot) { throw new Error('Nothing here') }
+                    const result: LinkItem[] = []
+                    snapchot.forEach(doc => {
+                        const { id, name, items } = doc.data() as List
+                        result.push({
+                            id,
+                            text: name,
+                            itemsNumber: (items || []).filter(x => x && !x.complete).length
+                        })
+                    })
+                    setListNames(result)
+                    setLoading(false)
+                },
+                err => {
+                    setError(err)
+                    setList(initialState)
+                    setLoading(false)
+                })
+    }
     const updateList = (newList: List) => {
         if (!newList.id) return
         setList(newList)
@@ -32,10 +73,6 @@ export default function useSharedList() {
             .doc(newList.id)
             .update(newList)
         return update
-    }
-    const selectList = (id: string) => {
-        const selectedList = { ...listFactory(), id }
-        setList(selectedList)
     }
     const addItem = (newItem: string) => {
         const items = [...list.items]
@@ -64,59 +101,16 @@ export default function useSharedList() {
         updateList(update)
     }
 
-    useEffect(() => {
-        firestore.collection('lists')
-            .where("active", "==", true)
-            .onSnapshot(
-                snapchot => {
-                    if (!snapchot) { throw new Error('Nothing here') }
-                    const result: LinkItem[] = []
-                    snapchot.forEach(doc => {
-                        const { id, name, items } = doc.data() as List
-                        result.push({
-                            id,
-                            text: name,
-                            itemsNumber: (items || []).filter(x => x && !x.complete).length
-                        })
-                    })
-                    setLinks(result)
-                    setLoading(false)
-                },
-                err => {
-                    setError(err)
-                    setList(initialState)
-                    setLoading(false)
-                })
-    }, [firestore])
-
-    useEffect(() => {
-        if (!list.id) return
-        const unsubscribe = firestore.collection('lists')
-            .doc(list.id)
-            .onSnapshot(
-                doc => {
-                    if (!doc) { throw new Error('Nothing here') }
-                    const result = listFactory({ ...doc.data() as List })
-                    setList(result)
-                    setLoading(false)
-                },
-                err => {
-                    setError(err)
-                    setList(initialState)
-                    setLoading(false)
-                })
-        return () => unsubscribe()
-    }, [firestore, list.id])
-
     return {
         error,
-        loading,
         list,
+        listNames,
+        loading,
         addItem,
         removeItem,
         resetList,
         checkItem,
         selectList,
-        links,
+        getLists,
     }
 }

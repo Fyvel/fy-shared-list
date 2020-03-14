@@ -1,4 +1,4 @@
-import React, { useState, KeyboardEvent, MouseEvent, SyntheticEvent } from 'react'
+import React, { useState, KeyboardEvent, MouseEvent } from 'react'
 import styles from './Menu.module.scss'
 import Button from '@material-ui/core/Button'
 import Badge from '@material-ui/core/Badge'
@@ -12,7 +12,9 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import ListIcon from '@material-ui/icons/List'
 import { makeStyles } from '@material-ui/core/styles'
+import { Link } from 'react-router-dom'
 import { LinkItem } from '../../models/domain'
+import { RoutePath } from '../../router/routes'
 
 const useStyles = makeStyles({
     fullList: {
@@ -23,7 +25,6 @@ const useStyles = makeStyles({
 
 type MenuProps = {
     links: LinkItem[],
-    callback: (arg: any) => void
     loading?: boolean
     user?: any
     handleLogout?: () => void
@@ -31,12 +32,6 @@ type MenuProps = {
 export default function Menu(props: MenuProps) {
     const classes = useStyles()
     const [state, setState] = useState({ bottom: false })
-
-    const navigate = (event: SyntheticEvent, item: LinkItem) => {
-        event.preventDefault()
-        if (!item) return
-        props.callback(item.id)
-    }
 
     const toggleDrawer = (open: boolean) => (
         event: KeyboardEvent | MouseEvent,
@@ -63,14 +58,14 @@ export default function Menu(props: MenuProps) {
                     role="presentation"
                     onClick={toggleDrawer(false)}
                     onKeyDown={toggleDrawer(false)}>
-
                     <List>
                         {props.loading && <div className={styles.loading}>
                             <CircularProgress color='primary' />
                         </div>}
                         {props.user && props.links.map((item, index) => (
-                            <ListItem button key={index}
-                                onClick={(event: SyntheticEvent) => navigate(event, item)}>
+                            <Link to={`${RoutePath.SHAREDLIST}?list=${item.id}`}
+                                className={styles.link}
+                                key={index}>
                                 <div className={styles.item}>
                                     {item.text}
                                     <Badge badgeContent={item.itemsNumber}
@@ -79,7 +74,7 @@ export default function Menu(props: MenuProps) {
                                         <div />
                                     </Badge>
                                 </div>
-                            </ListItem>
+                            </Link>
                         ))}
                     </List>
                     <Divider />
