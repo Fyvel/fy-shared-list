@@ -38,8 +38,9 @@ export default function SharedList(props: Props) {
 
     useEffect(() => {
         if (!props.id) return
-        selectList(props.id)
-    }, [props.id, selectList])
+        const unsubscribe = selectList(props.id)
+        return () => unsubscribe
+    }, [props.id])
 
     return (
         <>

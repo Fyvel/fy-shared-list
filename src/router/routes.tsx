@@ -6,10 +6,13 @@ import { useAuthContext } from "../authentication"
 import SignIn from "../containers/SignIn"
 import { useQuery } from "../hooks/useQuery"
 
+export const RoutePath = {
+    SIGNIN: "/signin",
+    SHAREDLIST: "/sharedList",
+}
 // wrapper to redirect not authenticated user
 function PrivateRoute({ children, ...rest }: { children: ReactNode } & RouteProps) {
     const { user } = useAuthContext()
-
     return (
         <Route
             {...rest}
@@ -17,16 +20,11 @@ function PrivateRoute({ children, ...rest }: { children: ReactNode } & RouteProp
                 ? (children)
                 : (<Redirect
                     to={{
-                        pathname: "/signin",
+                        pathname: RoutePath.SIGNIN,
                         state: { from: location }
                     }}
                 />)}
         />)
-}
-
-export const RoutePath = {
-    SIGNIN: "/signin",
-    SHAREDLIST: "/sharedList",
 }
 
 export default function Routes() {

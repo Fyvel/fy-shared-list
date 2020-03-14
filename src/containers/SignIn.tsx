@@ -3,17 +3,11 @@ import { useAuthContext } from '../authentication';
 import Login, { Logout } from '../components/Login';
 
 export default function SignIn({ callback }: { callback: () => void }) {
-    const initial = {
-        emailValue: '',
-        emailSent: false,
-        error: ''
-    }
     const {
         user,
         signIn,
         sendEmailLink,
         signOut, } = useAuthContext()
-    // const [emailKey, setEmailKey] = useStorage(initial.emailKey, initial.emailValue)
     const [emailSent, setEmailSent] = useState(false)
     const [error, setError] = useState<Error>()
 
