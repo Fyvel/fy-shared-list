@@ -40,7 +40,7 @@ export default function SharedList(props: Props) {
         if (!props.id) return
         const unsubscribe = selectList(props.id)
         return () => unsubscribe
-    }, [props.id])
+    }, [props.id, selectList])
 
     return (
         <>
@@ -59,5 +59,6 @@ export default function SharedList(props: Props) {
                     handleChangeItem={checkItem}
                     handleRemoveItem={removeItem}
                     handleResetList={resetList} />}
+            {/* TODO: {!props.id && 'Grid coming'} */}
         </>)
 }

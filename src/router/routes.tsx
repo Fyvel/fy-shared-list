@@ -32,7 +32,7 @@ export default function Routes() {
     const location = useLocation<{ from: string }>()
     const { from } = location.state || { from: { pathname: "/" } }
     const query = useQuery()
-
+    const routeParam = query.get('list') || 'todos'
     return (
         <Switch>
             <Route path={RoutePath.SIGNIN}>
@@ -42,7 +42,7 @@ export default function Routes() {
                 <Unauthorized />
             </Route> */}
             <PrivateRoute path={RoutePath.SHAREDLIST}>
-                <SharedList id={query.get('list')} />
+                <SharedList id={routeParam} />
             </PrivateRoute>
             <Redirect to={RoutePath.SHAREDLIST} />
             <Redirect exact path="/" to={RoutePath.SHAREDLIST} />
