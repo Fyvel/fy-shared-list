@@ -2,7 +2,7 @@
   "short_name": "shared list",
   "name": "fy-shared-list",
   "theme_color": "#00bcd4",
-  "background_color": "#282c34",
+  "background_color": "#d7e360",
   "display": "standalone",
   "orientation": "portrait",
   "icons": [

@@ -11,15 +11,19 @@ import Divider from '@material-ui/core/Divider'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import ListIcon from '@material-ui/icons/List'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
 import { LinkItem } from '../../models/domain'
 import { RoutePath } from '../../router/routes'
 
-const useStyles = makeStyles({
+
+const useStyles = (color: string) => makeStyles({
     fullList: {
         width: 'auto',
         maxHeight: '65vh',
+    },
+    link: {
+        color: color
     }
 })
 
@@ -30,7 +34,8 @@ type MenuProps = {
     handleLogout?: () => void
 }
 export default function Menu(props: MenuProps) {
-    const classes = useStyles()
+    const theme = useTheme()
+    const classes = useStyles(theme.palette.primary.light)()
     const [state, setState] = useState({ bottom: false })
 
     const toggleDrawer = (open: boolean) => (
@@ -64,8 +69,9 @@ export default function Menu(props: MenuProps) {
                         </div>}
                         {props.user && props.links.map((item, index) => (
                             <Link to={`${RoutePath.SHAREDLIST}?list=${item.id}`}
-                                className={styles.link}
-                                key={index}>
+                                className={`${classes.link} ${styles.link}`}
+                                key={index}
+                                color={theme.palette.secondary.light}>
                                 <div className={styles.item}>
                                     {item.text}
                                     <Badge badgeContent={item.itemsNumber}
