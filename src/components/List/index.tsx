@@ -56,11 +56,11 @@ export function List({ items, loading, handleChangeItem, handleRemoveItem, handl
                     handleChangeItem={handleChangeItem}
                     handleRemoveItem={handleRemoveItem} />
             ))}
-            {items.length > 0 &&
+            {/* {items.length > 0 &&
                 <Button aria-label='Clear list' onClick={handleResetList} variant="outlined" color="secondary">
                     Clear List
                 </Button>
-            }
+            } */}
         </div>
     )
 }
