@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './Login.module.scss';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -22,7 +22,9 @@ export default function Login(props: LoginProps) {
         <>
             <form onSubmit={handleSubmit(onSubmitEmail)} className={styles.Form}>
                 <TextField
+                    id="email"
                     inputRef={register}
+                    inputProps={{ label: 'email' }}
                     label="Email address"
                     name="email"
                     required
@@ -39,7 +41,9 @@ export default function Login(props: LoginProps) {
             <br />
             <form onSubmit={handleSubmit(onSubmitLink)} className={styles.Form}>
                 <TextField
+                    id="link"
                     inputRef={register}
+                    inputProps={{ label: 'link' }}
                     label="Magic sign-in link"
                     name="link"
                     required
