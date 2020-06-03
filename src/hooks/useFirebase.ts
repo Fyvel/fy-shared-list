@@ -5,6 +5,8 @@ import { config } from '../firebase'
 
 firebase.initializeApp(config)
 
+firebase.auth().useDeviceLanguage()
+
 const { firestore, fireauth, persistence } = {
     firestore: firebase.firestore(),
     fireauth: firebase.auth(),
